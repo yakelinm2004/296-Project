@@ -1,8 +1,8 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
 import 'package:mobile_app_296/pages/account_info.dart';
-import 'package:mobile_app_296/pages/login.dart';
+import 'package:mobile_app_296/pages/login_page.dart';
 
 class AccountType extends StatefulWidget {
   const AccountType({super.key});
@@ -109,6 +109,31 @@ class _AccountTypeState extends State<AccountType> {
                 ),
               ),
             ),
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Already have an account?"),
+                SizedBox(width: 5,),
+                GestureDetector(
+                  onTap: (){
+                    Navigator.push(
+                      context, 
+                      MaterialPageRoute(builder: (context) => LoginPage())
+                    );
+                  },
+                  child: Text(
+                    "Login",
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold
+
+                    ),
+                  ),
+                )
+              ],
+            ),
+          /*
           TextButton(
             child: Text(
               'Already have one? Login here',
@@ -126,7 +151,7 @@ class _AccountTypeState extends State<AccountType> {
               );
             },
 
-          ),
+          ),*/
           ],
         ),
       ),

@@ -1,8 +1,11 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_app_296/pages/home_page.dart';
+import 'package:mobile_app_296/pages/login_page.dart';
+import 'package:mobile_app_296/user%20authentication/user_auth.dart';
 
 class AccountInfo extends StatefulWidget {
   
@@ -12,31 +15,15 @@ class AccountInfo extends StatefulWidget {
   State<AccountInfo> createState() => _AccountInfoState();
 }
 
-final _email = TextEditingController();
-final _firstName = TextEditingController();
-final _lastName = TextEditingController();
-final _password = TextEditingController();
+final FirebaseAuthentication _auth = FirebaseAuthentication();
 
-Future createAccount() async{
-  await FirebaseAuth.instance.createUserWithEmailAndPassword(
-    email: _email.text.trim(), 
-    password: _password.text.trim()
-  );
+//Text field controllers
+TextEditingController _email = TextEditingController();
+TextEditingController _firstName = TextEditingController();
+TextEditingController _lastName = TextEditingController();
+TextEditingController _password = TextEditingController();
 
-  userInformation(
-    _firstName.text.trim(), 
-    _lastName.text.trim(), 
-    _email.text.trim()
-  );
-}
 
-Future userInformation(String firstName, String lastName, String email) async{
-  await FirebaseFirestore.instance.collection('users').add({
-    'first name': firstName,
-    'last name': lastName,
-    'email': email
-});
-}
 
 @override
 void dispose(){
@@ -44,7 +31,11 @@ void dispose(){
   _password.dispose();
 }
 
+
 class _AccountInfoState extends State<AccountInfo> {
+//State of radio button
+String selectedOption = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,11 +143,19 @@ class _AccountInfoState extends State<AccountInfo> {
                               ),
                             ),
                           ),
+
+                          RadioListTile(
+                            title: Text("Client"),
+                            value: "Client", groupValue: selectedOption, onChanged: (value){
+                            setState(() {
+                              selectedOption = value.toString();
+                            });
+                          }),
                           
                           SizedBox(height: 30),
                           //Sign Up Button
                           ElevatedButton( //translator button
-                            onPressed: createAccount,
+                            onPressed: _signUp,
                             style: ElevatedButton.styleFrom(
                             primary: Colors.orangeAccent, 
                             shape: RoundedRectangleBorder(
@@ -177,8 +176,30 @@ class _AccountInfoState extends State<AccountInfo> {
                               ),
                             ),
                           ),
-                          
-                      
+
+                          SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("Already have an account?"),
+                              SizedBox(width: 5,),
+                              GestureDetector(
+                                onTap: (){
+                                  Navigator.push(
+                                    context, 
+                                    MaterialPageRoute(builder: (context) => LoginPage())
+                                  );
+                                },
+                                child: Text(
+                                  "Login",
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
             
                         ],
                       ),
@@ -198,13 +219,46 @@ class _AccountInfoState extends State<AccountInfo> {
 
     );
   }
+
+  void _signUp() async{
+
+    String email = _email.text.trim();
+    String password = _password.text.trim();
+    String firstName = _firstName.text.trim();
+    String lastName = _lastName.text.trim();
+
+    try{
+
+      User? user = await _auth.signUpWitheEmailAndPassword(email, password, context);
+
+    //surround this with try/catch blocks for exception handling
+    if(user != null){
+      print("User successfully created");
+
+      FirebaseFirestore? info = await _auth.storeUserInformation(email, password, firstName, lastName);
+      if(info != null){
+        print("User data successfully stored");
+
+        Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage())
+        );
+      } else{
+        print("An error occurred storing user data");
+      }
+      
+    } else{
+      print("Error creating user");
+    }
+    } catch(e){
+      print("An error ocurred: $e");
+    }
+    
+
+    
+  
 }
-Widget accountInfo() => Container(
-  child: Padding(
-    padding: EdgeInsets.all(10),
 
+}
 
-  )
-
-);
 

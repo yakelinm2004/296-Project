@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:mobile_app_296/pages/account_type.dart';
-import 'package:mobile_app_296/pages/login.dart';
+import 'package:mobile_app_296/pages/login_page.dart';
 
 class CreateAccount extends StatefulWidget {
   const CreateAccount({super.key});
@@ -25,22 +25,45 @@ class _CreateAccountState extends State<CreateAccount> {
             Spacer(),
             Container(
               margin: EdgeInsets.all(10.0),
-              child: Text('Tongue \nTied',
-              style: TextStyle(
-                shadows: [
-                  Shadow(
-                    blurRadius: 10.0,
-                    color: const Color.fromARGB(255, 141, 161, 177),
-                    offset: Offset(5.0, 5.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Tongue',
+                  style: TextStyle(
+                    shadows: [
+                      Shadow(
+                        blurRadius: 10.0,
+                        color: const Color.fromARGB(255, 141, 161, 177),
+                        offset: Offset(5.0, 5.0),
+                      ),
+                    ],
+                  
+                    fontFamily: "Magz",
+                    fontWeight: FontWeight.bold, 
+                    fontSize: 50, 
+                    color: Color.fromARGB(226, 214, 238, 231)
+                    
+                    )
                   ),
+                  Text('Tied',
+                  style: TextStyle(
+                    shadows: [
+                      Shadow(
+                        blurRadius: 10.0,
+                        color: const Color.fromARGB(255, 141, 161, 177),
+                        offset: Offset(5.0, 5.0),
+                      ),
+                    ],
+                  
+                    fontFamily: "Magz",
+                    fontWeight: FontWeight.bold, 
+                    fontSize: 50, 
+                    color: Color.fromARGB(226, 214, 238, 231)
+                    
+                    )
+                  ),
+
                 ],
-              
-                fontFamily: "Magz",
-                fontWeight: FontWeight.bold, 
-                fontSize: 40, 
-                color: Color.fromARGB(226, 214, 238, 231)
-                
-                )
               ),
             ),
             Spacer(),
@@ -78,24 +101,29 @@ class _CreateAccountState extends State<CreateAccount> {
               ),
             ),
             
-          TextButton(
-            child: Text(
-              'Already have one? Login here',
-              style: TextStyle(
-                fontSize: 15.0,
-                fontWeight: FontWeight.normal,
-                color: Colors.black
+          Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Already have an account?"),
+                SizedBox(width: 5,),
+                GestureDetector(
+                  onTap: (){
+                    Navigator.push(
+                      context, 
+                      MaterialPageRoute(builder: (context) => LoginPage())
+                    );
+                  },
+                  child: Text(
+                    "Login",
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold
 
-              ),
+                    ),
+                  ),
+                )
+              ],
             ),
-            onPressed: () {
-              Navigator.push(
-                context, 
-                MaterialPageRoute(builder: (context) => LoginPage())
-              );
-            },
-
-          ),
 
         ]),
         ),
