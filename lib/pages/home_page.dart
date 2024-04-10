@@ -2,10 +2,22 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_app_296/clientUI/cl_profile_page.dart';
 import 'package:mobile_app_296/pages/login_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int index = 0;
+  final navScreens = [
+    //CLientProfilePage()
+    
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -66,21 +78,15 @@ class HomePage extends StatelessWidget {
                         fontSize: 18.0,
                         fontWeight: FontWeight.bold,
                         color: Colors.black
-              
+                                      
                         ),
                     ),
                   ),
-            )
-            
-
-
+            ),  
           ],
 
         )
       ),
-      
-      );
+    );
   }
-
-  
 }

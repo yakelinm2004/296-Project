@@ -2,9 +2,12 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_app_296/pages/account_info.dart';
+import 'package:mobile_app_296/clientUI/cl_navigation.dart';
+import 'package:mobile_app_296/pages/create_account.dart';
+import 'package:mobile_app_296/translatorUI/t_navigation.dart';
 import 'package:mobile_app_296/user%20authentication/user_auth.dart';
 
+import '../user authentication/firestore_data.dart';
 import 'home_page.dart';
 //import 'package:google_fonts/google_fonts.dart';
 
@@ -15,7 +18,7 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-final FirebaseAuthentication _auth = FirebaseAuthentication();
+final UserAuthentication _auth = UserAuthentication();
 
 TextEditingController _email = TextEditingController();
 TextEditingController _password = TextEditingController();
@@ -124,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                                 onTap: (){
                                   Navigator.push(
                                     context, 
-                                    MaterialPageRoute(builder: (context) => AccountInfo()) //rename account info page
+                                    MaterialPageRoute(builder: (context) => CreateAccount()) //rename account info page
                                   );
                                 },
                                 child: Text(
@@ -162,13 +165,38 @@ class _LoginPageState extends State<LoginPage> {
     String password = _password.text.trim();
 
 
-    User? user = await _auth.signInWitheEmailAndPassword(email, password);
+    User? user = await _auth.handleSignIn(context, email, password);
     if(user != null){
-      print("User successfully signed in");
-      Navigator.push(
-        context, 
-        MaterialPageRoute(builder: (context) => HomePage())
-      );
+      print("User successfully signed in: ${user.email}");
+     
+      Map<String, dynamic> userData = await getUserData(user.uid);
+      if(mounted){
+         print('User data: $userData');
+         String accountType = userData['accountType'];
+         print('User account type $accountType');
+         //now that we have this figured out, fix main and create account
+         
+      }
+     
+      if(mounted && userData != null && userData.containsKey('accountType')){
+        String accountType = userData['accountType'];
+        print('User account type is $accountType');
+        if(accountType == 'Client'){
+          Navigator.push(
+            context, 
+            MaterialPageRoute(builder: (context) => ClientNavigation())
+          );
+        } else if(accountType == 'Translator'){
+          Navigator.push(
+            context, 
+            MaterialPageRoute(builder: (context) => TranslatorNavigation())
+          );
+        } else{
+          print('User data not available or missing account type');
+        }
+        
+      }
+
     } else{
       print("Unable to sign user in");
 
