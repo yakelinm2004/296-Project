@@ -170,6 +170,7 @@ class _LoginPageState extends State<LoginPage> {
       print("User successfully signed in: ${user.email}");
      
       Map<String, dynamic> userData = await getUserData(user.uid);
+      /*
       if(mounted){
          print('User data: $userData');
          String accountType = userData['accountType'];
@@ -177,17 +178,17 @@ class _LoginPageState extends State<LoginPage> {
          //now that we have this figured out, fix main and create account
          
       }
-     
+      */
       if(mounted && userData != null && userData.containsKey('accountType')){
         String accountType = userData['accountType'];
         print('User account type is $accountType');
         if(accountType == 'Client'){
-          Navigator.push(
+          Navigator.pushReplacement(
             context, 
             MaterialPageRoute(builder: (context) => ClientNavigation())
           );
         } else if(accountType == 'Translator'){
-          Navigator.push(
+          Navigator.pushReplacement(
             context, 
             MaterialPageRoute(builder: (context) => TranslatorNavigation())
           );

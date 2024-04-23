@@ -4,8 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_app_296/clientUI/cl_navigation.dart';
 import 'package:mobile_app_296/pages/login_page.dart';
 import 'package:mobile_app_296/clientUI/cl_profile_page.dart';
+import 'package:mobile_app_296/translatorUI/t_navigation.dart';
 
 import 'pages/app_home.dart';
+import 'user authentication/firestore_data.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,18 +35,43 @@ class AuthenticationWrapper extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.active) {
           User? user = snapshot.data as User?;
           if (user == null) {
-            // The user is signed out
-            print("User is signed out");
-            return AppHomePage();
+            // If no user is signed in, navigate to the login page
+            return LoginPage();
           } else {
-            // The user is signed in
-            print("User is signed in: ${user.email}");
-            return ClientNavigation();  //return userAuth page that will determine if client or user
+            // If user is signed in, determine their account type and navigate accordingly
+            return FutureBuilder(
+              future: getUserData(user.uid),
+              builder: (context, AsyncSnapshot<Map<String, dynamic>> userDataSnapshot) {
+                if (userDataSnapshot.connectionState == ConnectionState.waiting) {
+                  // Still waiting for user data, show a loading spinner
+                  return CircularProgressIndicator();
+                } else {
+                  // User data retrieved, check account type
+                  Map<String, dynamic>? userData = userDataSnapshot.data;
+                  if (userData != null && userData.containsKey('accountType')) {
+                    String accountType = userData['accountType'];
+                    if (accountType == 'Client') {
+                      return ClientNavigation();
+                    } else if (accountType == 'Translator') {
+                      return TranslatorNavigation();
+                    } else {
+                      print('Unknown account type: $accountType');
+                      // Handle unknown account type here
+                      return Container();
+                    }
+                  } else {
+                    // User data not available or missing account type, handle it here
+                    print('User data not available or missing account type');
+                    return Container();
+                  }
+                }
+              },
+            );
           }
         }
 
         // By default, show a loading spinner
-        return const CircularProgressIndicator();
+        return CircularProgressIndicator();
       },
     );
   }

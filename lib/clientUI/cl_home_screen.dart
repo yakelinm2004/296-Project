@@ -212,7 +212,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
   }
 
   void _bookingForm(String translatorId) {
-    print(translatorId);
+    print('Translator ID: ' + translatorId);
     Navigator.push(
       context, 
       MaterialPageRoute(builder: (context) => BookingForm(translatorId: translatorId))

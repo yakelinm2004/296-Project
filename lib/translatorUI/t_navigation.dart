@@ -18,7 +18,7 @@ class _TranslatorNavigationState extends State<TranslatorNavigation> {
   int _selectedIndex = 0;
 
   final List<Widget> screens = [
-    TranslatorHomePage(),
+    //TranslatorHomePage(),
     TranslatorServicesPage(),
     TranslatorProfilePage()
 
@@ -39,10 +39,12 @@ class _TranslatorNavigationState extends State<TranslatorNavigation> {
         onDestinationSelected: _onItemTapped,
         selectedIndex: _selectedIndex,
         destinations: [
+          /*
           NavigationDestination(
             icon: Icon(Icons.home), 
             label: 'Home'
           ),
+          */
           NavigationDestination(
             icon: Icon(Icons.people), 
             label: 'Services'

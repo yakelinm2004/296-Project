@@ -175,6 +175,7 @@ class _TranslatorProfilePageState extends State<TranslatorProfilePage> {
             const Divider(
               color: Colors.black12,
             ),
+            
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: GestureDetector(

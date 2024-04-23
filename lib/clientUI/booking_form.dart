@@ -55,11 +55,18 @@ class _BookingFormState extends State<BookingForm> {
       .collection('users')
       .doc(userId)
       .collection('bookings');
+      
+      DocumentSnapshot<Map<String, dynamic>> translatorDoc = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(widget.translatorId)
+      .get();
 
       clientBookings.add({
         'translator id': widget.translatorId,
         'date': DateFormat('EEE, M/d/y').format(currentDate),
-        'description': _descriptionController.text
+        'description': _descriptionController.text,
+        'first name': translatorDoc['first name'],
+        'last name': translatorDoc['last name']
       });
 
       clientBookingSaved = true;
@@ -70,20 +77,30 @@ class _BookingFormState extends State<BookingForm> {
     }
 
     try{
+
+    
       CollectionReference translatorServices = FirebaseFirestore.instance
       .collection('users')
       .doc(widget.translatorId)
       .collection('services');
 
+      DocumentSnapshot<Map<String, dynamic>> clientDoc = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .get();
+
+      
       translatorServices.add({
-        'client id': _currentUser.uid,
+        'client id': userId,
         'date': DateFormat('EEE, M/d/y').format(currentDate),
-        'description': _descriptionController.text
+        'description': _descriptionController.text,
+        'first name': clientDoc['first name'],
+        'last name': clientDoc['last name']
       });
 
       translatorServiceSaved = true;
       print('Service successfully saved');
-
+      
     } catch(e){
       print('Unable to store translator service');
     }
@@ -94,7 +111,7 @@ class _BookingFormState extends State<BookingForm> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Success'),
-            content: Text('Booking successfully saved'),
+            content: Text('Booking successfully saved with: ' + widget.translatorId),
             actions: <Widget>[
               TextButton(
                 onPressed: (){

@@ -10,26 +10,30 @@ class FirestoreData{
   getAccountType(String uid) {}
   //final String _firstname = '';
   //final String _lastName = '';
+
+
+
+
+  
 }
 
 
 Future<Map<String, dynamic>> getUserData(String userID) async {
   try {
     // Query used to find user docs containing userID
-    QuerySnapshot<Map<String, dynamic>> userDocs = await FirebaseFirestore.instance
+    DocumentSnapshot<Map<String, dynamic>> userDocs = await FirebaseFirestore.instance
         .collection('users')
-        .where('user id', isEqualTo: userID)
-        .limit(1)
+        .doc(userID)
         .get();
 
     // Check if any documents match the query
-    if (userDocs.docs.isNotEmpty) {
-      DocumentSnapshot<Map<String, dynamic>> userDoc = userDocs.docs.first;
-      String firstName = userDoc.get('first name');
-      String lastName = userDoc.get('last name');
-      String email = userDoc.get('email');
-      String accountType = userDoc.get('account type');
-      String language = userDoc.get('language');
+    if (userDocs != null) {
+      String firstName = userDocs['first name'];
+      String lastName = userDocs['last name'];
+      String email = userDocs['email'];
+      String accountType = userDocs['account type'];
+      String language = userDocs['language'];
+    
 
       // Return user data as a map
       return {

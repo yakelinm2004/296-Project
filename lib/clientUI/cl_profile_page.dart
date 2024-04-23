@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app_296/models/usermodel.dart';
+import 'package:mobile_app_296/pages/edit_profile.dart';
 import 'package:mobile_app_296/pages/login_page.dart';
 import 'package:mobile_app_296/user%20authentication/firestore_data.dart';
 import 'package:mobile_app_296/user%20authentication/user_auth.dart';
@@ -102,135 +103,162 @@ class _CLientProfilePageState extends State<CLientProfilePage> {
                 ),
               ],
             ),
-            Divider(
-              color: Colors.black12,
-            ),
+            SizedBox(height: 10),
             //user email
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Icon(Icons.person),
-                  SizedBox(width: 10.0),
-                  Text(
-                    'Edit Profile',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.0
-              
-              
-                    ),
-                  ),
-                ],
-              ),
-              
-            ),
-            Divider(
-              color: Colors.black12,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Icon(Icons.language),
-                  SizedBox(width: 10.0),
-                  Text(
-                    'Languages',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.0
-              
-              
-                    ),
-                  ),
-                ],
-              ),
-              
-            ),
-            Divider(
-              color: Colors.black12,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Icon(Icons.payment),
-                  SizedBox(width: 10.0),
-                  Text(
-                    'Payment Information',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.0
-              
-              
-                    ),
-                  ),
-                ],
-              ),
-              
-            ),
 
-            Divider(
-              color: Colors.black12,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GestureDetector(
-                onTap: (){
-                  print('sign out button tapped');
-                  FirebaseAuth.instance.signOut();
-                  print('User is signed out');
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginPage())
-                  );
-                },
-                child: Row(
+            ClipRRect(
+              borderRadius: BorderRadiusDirectional.circular(20),
+              child: Container(
+                height: 420,
+                width: 360,
+                color: Colors.white,
+
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
                   children: [
-                    Icon(Icons.logout),
-                    SizedBox(width: 10.0),
-                    Text(
-                      'Sign Out',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15.0
-                
-                
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => EditProfile())
+                          );
+                        },
+
+
+                        child: Row(
+                          children: [
+                            Icon(Icons.person),
+                            SizedBox(width: 10.0),
+                            Text(
+                              'Edit Profile',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15.0
+                        
+                        
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+                    ),
+
+                    Divider(
+                      color: Colors.black12,
+                    ),
+
+
+                     Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.language),
+                          SizedBox(width: 10.0),
+                          Text(
+                            'Languages',
+                            style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15.0
+              
+              
+                            ),
+                          ),
+                        ],
+                      ),
+              
+                    ),
+                    Divider(
+                      color: Colors.black12,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.payment),
+                          SizedBox(width: 10.0),
+                          Text(
+                            'Payment Information',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15.0
+            
+                            ),
+                          ),
+                        ],
+                      ),
+              
+                    ),
+
+                    Divider(
+                      color: Colors.black12,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: (){
+                          print('sign out button tapped');
+                          FirebaseAuth.instance.signOut();
+                          print('User is signed out');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => LoginPage())
+                          );
+                        },
+                        child: Row(
+                          children: [
+                            Icon(Icons.logout),
+                            SizedBox(width: 10.0),
+                            Text(
+                              'Sign Out',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15.0
+                
+                
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+              
+                    ),
+                    Divider(
+                      color: Colors.black12,
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete_forever),
+                          SizedBox(width: 10.0),
+                          Text(
+                            'Delete Account',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15.0
+              
+              
+                            ),
+                          ),
+                        ],
+                      ),
+              
                     ),
                   ],
                 ),
+                
               ),
-              
             ),
-            Divider(
-              color: Colors.black12,
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Icon(Icons.delete_forever),
-                  SizedBox(width: 10.0),
-                  Text(
-                    'Delete Account',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.0
-              
-              
-                    ),
-                  ),
-                ],
-              ),
-              
-            ),
+            
+           
           ],
           
         )
