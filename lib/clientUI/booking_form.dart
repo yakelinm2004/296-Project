@@ -51,6 +51,8 @@ class _BookingFormState extends State<BookingForm> {
     String userId = _currentUser.uid;
     bool clientBookingSaved = false;
     bool translatorServiceSaved = false;
+    String translatorFirstName = '';
+    String translatorLastName = '';
 
     try{
       //Accesses client bookings collection
@@ -74,9 +76,12 @@ class _BookingFormState extends State<BookingForm> {
         'last name': translatorDoc['last name']
       });
 
+      translatorFirstName = translatorDoc['first name'];
+      translatorLastName = translatorDoc['last name'];
+
       bookingId = clientBookingRef.id;
       clientBookingSaved = true;
-      print('Booking successfully saved with booking ID: $bookingId');
+      print('Booking successfully saved with booking ID: $translatorFirstName $translatorLastName');
 
     } catch(e){
       print('Unable to store client booking');
@@ -118,7 +123,7 @@ class _BookingFormState extends State<BookingForm> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Success'),
-            content: Text('Booking successfully saved with: ' + widget.translatorId),
+            content: Text('Booking successfully saved with $translatorFirstName $translatorLastName'),
             actions: <Widget>[
               TextButton(
                 onPressed: (){
