@@ -3,12 +3,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app_296/clientUI/cl_navigation.dart';
+import 'package:mobile_app_296/pages/app_home.dart';
 import 'package:mobile_app_296/pages/create_account.dart';
 import 'package:mobile_app_296/translatorUI/t_navigation.dart';
 import 'package:mobile_app_296/user%20authentication/user_auth.dart';
 
 import '../user authentication/firestore_data.dart';
-import 'home_page.dart';
+
 //import 'package:google_fonts/google_fonts.dart';
 
 class LoginPage extends StatefulWidget {
@@ -94,7 +95,8 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           SizedBox(height: 10),
 
-                          ElevatedButton( //translator button
+                          //Sign in button
+                          ElevatedButton( 
                             onPressed: _signIn,
                             style: ElevatedButton.styleFrom(
                             primary: Colors.orangeAccent, 
@@ -170,15 +172,7 @@ class _LoginPageState extends State<LoginPage> {
       print("User successfully signed in: ${user.email}");
      
       Map<String, dynamic> userData = await getUserData(user.uid);
-      /*
-      if(mounted){
-         print('User data: $userData');
-         String accountType = userData['accountType'];
-         print('User account type $accountType');
-         //now that we have this figured out, fix main and create account
-         
-      }
-      */
+    
       if(mounted && userData != null && userData.containsKey('accountType')){
         String accountType = userData['accountType'];
         print('User account type is $accountType');
@@ -193,13 +187,24 @@ class _LoginPageState extends State<LoginPage> {
             MaterialPageRoute(builder: (context) => TranslatorNavigation())
           );
         } else{
+          Navigator.pushReplacement(
+            context, 
+            MaterialPageRoute(builder: (context) => AppHomePage())
+          );
           print('User data not available or missing account type');
         }
         
       }
 
     } else{
+      
       print("Unable to sign user in");
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushReplacement(
+            context, 
+            MaterialPageRoute(builder: (context) => AppHomePage())
+          );
+
 
     }
 

@@ -61,7 +61,6 @@ class _ClientHomePageState extends State<ClientHomePage> {
     var data = await FirebaseFirestore.instance
     .collection('users')
     .where('account type', isGreaterThanOrEqualTo: 'Translator')
-    //.orderBy('language')
     .get();
 
     setState(() {
@@ -71,13 +70,11 @@ class _ClientHomePageState extends State<ClientHomePage> {
     
     
     print('Number of documents fetched: ${data.docs.length}');
-  data.docs.forEach((doc) {
-    print('Document ID: ${doc.id}');
-    print('Document data: ${doc.data()}');
-  });
+    data.docs.forEach((doc) {
+      print('Document ID: ${doc.id}');
+      print('Document data: ${doc.data()}');
+    });
     
-
-
   }
 
 
@@ -160,17 +157,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
 
                                       ),
                                       ),
-/*
-                                    Text(
-                                      result['account type'],
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w300
 
-                                      ),
-                                    
-                                    ),
-                                    */
                                     Text(
                                       'Language: ' + result['language'],
                                       style: TextStyle(
@@ -197,8 +184,6 @@ class _ClientHomePageState extends State<ClientHomePage> {
                           ),
                         );
                       }),
-                  
-                  
                 ],
               ),
               

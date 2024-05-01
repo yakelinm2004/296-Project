@@ -2,9 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app_296/clientUI/cl_navigation.dart';
-import 'package:mobile_app_296/clientUI/cl_profile_page.dart';
+import 'package:mobile_app_296/translatorUI/t_navigation.dart';
 
-import '../user authentication/firestore_data.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
@@ -21,6 +20,7 @@ class _EditProfileState extends State<EditProfile> {
   late TextEditingController _lastNameController;
   late TextEditingController _emailController;
   late TextEditingController _languageController;
+  late String accountType;
 
   @override
   void initState() {
@@ -30,7 +30,8 @@ class _EditProfileState extends State<EditProfile> {
     _firstNameController = TextEditingController();
     _lastNameController = TextEditingController();
     _emailController = TextEditingController();
-    _languageController = TextEditingController();
+    _languageController = TextEditingController(); 
+    accountType = '';
     getCurrentUserData();
   }
 
@@ -54,15 +55,14 @@ class _EditProfileState extends State<EditProfile> {
     _lastNameController.text = userDoc!['last name'] ?? '';
     _emailController.text = userDoc!['email'] ?? '';
     _languageController.text = userDoc!['language'] ?? '';
+    accountType = userDoc!['account type'] ?? '';
    }
      
-  
-
-
   }
 
   void updateAccountInfo() async {
     try{
+    //Updating instance of user info doc 
     await FirebaseFirestore.instance
     .collection('users')
     .doc(_currentUser!.uid)
@@ -76,31 +76,31 @@ class _EditProfileState extends State<EditProfile> {
     // Reauthenticate the user
     var credential = EmailAuthProvider.credential(
       email: _currentUser.email!,
-      password: userDoc!['password'] ?? '', // Replace 'currentPassword' with the user's current password
+      password: userDoc!['password'] ?? '',
     );
     await _currentUser.reauthenticateWithCredential(credential);
-
-    // Update email in Firebase Authentication
     await _currentUser.verifyBeforeUpdateEmail(_emailController.text);
     
-    // Show a success message
+
+    //Info successfully updated
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Information successfully update')),
+      const SnackBar(content: Text('Information successfully updated')),
     );
+
   } catch (e) {
-    // Show an error message
+    // Error updating email
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Failed to update email: $e')),
     );
 
 
   }
-  }
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 184, 207, 216),
+      backgroundColor: const Color.fromARGB(255, 184, 207, 216),
       body: SafeArea(
         child: Center(
           child: Column(
@@ -123,7 +123,8 @@ class _EditProfileState extends State<EditProfile> {
                             fontWeight: FontWeight.bold
                           ),
                         ),
-                    
+
+                        //First name text box
                         Padding(
                               padding: const EdgeInsets.all(10.0),
                               child: Column(
@@ -150,6 +151,7 @@ class _EditProfileState extends State<EditProfile> {
                               ),
                             ),
                     
+                            //Last name text box
                             Padding(
                               padding: const EdgeInsets.all(10.0),
                               child: Container(
@@ -169,6 +171,7 @@ class _EditProfileState extends State<EditProfile> {
                               ),
                             ),
                     
+                            //Email text box
                             Padding(
                               padding: const EdgeInsets.all(10.0),
                               child: Container(
@@ -188,6 +191,7 @@ class _EditProfileState extends State<EditProfile> {
                               ),
                             ),
 
+                            //Language text box
                             Padding(
                               padding: const EdgeInsets.all(10.0),
                               child: Container(
@@ -208,8 +212,8 @@ class _EditProfileState extends State<EditProfile> {
                             ),
                             const SizedBox(height: 10),
                           
-
-                            ElevatedButton( //translator button
+                            //Confirm button
+                            ElevatedButton( 
                             onPressed: updateAccountInfo,
                             style: ElevatedButton.styleFrom(
                             primary: Colors.orangeAccent, 
@@ -231,44 +235,42 @@ class _EditProfileState extends State<EditProfile> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 13),
+                          const SizedBox(height: 13),
 
                           GestureDetector(
                             onTap: (){
-                              //if client push to client nav, if translator push to translator nav
-                              Navigator.push(
+                              //If account type is client, redirect to Client UI
+                              if(accountType == 'Client'){
+                                 Navigator.push(
                                     context, 
-                                    MaterialPageRoute(builder: (context) => ClientNavigation()) //rename account info page
+                                    MaterialPageRoute(builder: (context) => const ClientNavigation()) 
                                   );
+                              //If account type is translator, redirect to Translator UI
+                              } else if(accountType == 'Translator'){
+                                Navigator.push(
+                                    context, 
+                                    MaterialPageRoute(builder: (context) => const TranslatorNavigation()) 
+                                  );
+                              }
+                            
                             },
                             child: const Text(
                               'Back to profile',
                               style: TextStyle(
                                 color: Colors.blueAccent
-                                
                               ),
                             
                             ),
-                          )
-                              
-                        
-                      ],
-                              
-                              
+                          )  
+                      ],         
                     ),
                   ),
-          
                 )
-          
               )
-          
             ],
           ),
         )
-        
         ),
-
-
 
     );
   }

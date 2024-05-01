@@ -54,7 +54,7 @@ class _AppHomePageState extends State<AppHomePage> {
                         offset: Offset(5.0, 5.0),
                       ),
                     ],
-                  
+                    
                     fontFamily: "Magz",
                     fontWeight: FontWeight.bold, 
                     fontSize: 50, 
@@ -62,7 +62,6 @@ class _AppHomePageState extends State<AppHomePage> {
                     
                     )
                   ),
-
                 ],
               ),
             ),

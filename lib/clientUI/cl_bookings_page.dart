@@ -28,7 +28,6 @@ class _BookingsPageState extends State<BookingsPage> {
     super.initState();
     _getCurrentUser();
     _getAllBookings();
-    //_getTranslatorInfo();
 
   }
 
@@ -53,24 +52,19 @@ class _BookingsPageState extends State<BookingsPage> {
 
           for (DocumentSnapshot booking in _bookings) {
             setState(() {
-               final translatorId = booking['translator id'];
+               translatorId = booking['translator id'];
                _getTranslatorInfo(translatorId);
               
             });
             print(translatorId);
-            //_getTranslatorInfo(translatorId);
-    }
+  
+          }
         });
 
-        
-      
-        
       }catch(e){
         print('Error retrieving bookings: $e');
       }
     
-
-
   }
 
   void _getTranslatorInfo(String? translatorId) async{
@@ -84,9 +78,7 @@ class _BookingsPageState extends State<BookingsPage> {
       .get();
 
       setState(() {
-        //_translators = translatorDoc.get(field);
         translatorFirstName = translatorDoc.get('first name').toString();
-        //print(translatorFirstName);
         translatorLastName = translatorDoc.get('last name').toString();
         print('$translatorFirstName $translatorLastName');
 
@@ -96,7 +88,81 @@ class _BookingsPageState extends State<BookingsPage> {
       print('Unable to retrieve translator info: $e');
     }
     
+  }
+
+  void _cancelBookings(DocumentSnapshot bookingSnapshot) async {
+   
+    try{
+
+      final bookingId = bookingSnapshot.id;
+
+      //Deleting booking doc from client booking collection
+       await FirebaseFirestore.instance
+      .collection('users')
+      .doc(_currentUser.uid)
+      .collection('bookings')
+      .doc(bookingId)
+      .delete();
+      print('Successfully cancelled booking for client');
+
+      //Deleting services doc from translator's booking dollection
+       await FirebaseFirestore.instance
+      .collection('users')
+      .doc(translatorId)
+      .collection('services')
+      .where('client booking id', isEqualTo: bookingId)
+      .get()
+      .then((querySnapshot) {
+        querySnapshot.docs.forEach((doc) { 
+          doc.reference.delete();
+        });
+      });
+
+      setState(() {
+        _bookings.removeWhere((booking) => booking.id == bookingId);
+      });
+
+      //Booking successfully cancelled
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Booking cancelled successfully')),
+      );
+      print('Successfully removed service from translator');
+  
+      //Booking cancellation unsuccessful
+    } catch(e){
+      print("Error cancelling booking: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to cancel booking. Please try again')),
+    );
+    }
     
+  }
+
+  void _confirmCancellation(DocumentSnapshot bookingSnapshot){
+    showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Cancel Booking'),
+        content: Text('Are you sure you want to cancel this booking?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); 
+            },
+            child: Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); 
+              _cancelBookings(bookingSnapshot); 
+            },
+            child: Text('Yes'),
+          ),
+        ],
+      );
+    },
+  );
 
   }
   
@@ -172,9 +238,25 @@ class _BookingsPageState extends State<BookingsPage> {
                                   fontWeight: FontWeight.bold,
               
                                 ),
-                              ),
+                              )    
+                              
                             ],
                           )
+
+                        ),
+                        ElevatedButton(
+                          style: TextButton.styleFrom(
+                          primary: const Color.fromARGB(255, 8, 86, 48),
+                          onSurface: Color.fromARGB(255, 0, 0, 0),
+                          ),
+                          onPressed: ()=> _confirmCancellation(booking),
+                          child: const Text(                        
+                            'Cancel',
+                            style: TextStyle(
+                              color: Colors.red
+                            ),
+
+                          ),
                         )
                       ],
                     ),

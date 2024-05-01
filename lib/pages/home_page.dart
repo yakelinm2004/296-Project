@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
+/*
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_app_296/clientUI/cl_profile_page.dart';
+
 import 'package:mobile_app_296/pages/login_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -14,10 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int index = 0;
-  final navScreens = [
-    //CLientProfilePage()
-    
-  ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -90,3 +87,4 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+*/

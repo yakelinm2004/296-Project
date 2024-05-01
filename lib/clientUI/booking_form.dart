@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_app_296/clientUI/cl_navigation.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart'; 
 
@@ -18,6 +19,7 @@ class BookingForm extends StatefulWidget {
 class _BookingFormState extends State<BookingForm> {
   DateTime currentDate = DateTime.now();
   late TextEditingController _descriptionController;
+  String bookingId = '';
   
 
   late User _currentUser;
@@ -51,17 +53,20 @@ class _BookingFormState extends State<BookingForm> {
     bool translatorServiceSaved = false;
 
     try{
+      //Accesses client bookings collection
       CollectionReference clientBookings = FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
       .collection('bookings');
       
+      //Specifically accesses translator's user doc
       DocumentSnapshot<Map<String, dynamic>> translatorDoc = await FirebaseFirestore.instance
       .collection('users')
       .doc(widget.translatorId)
       .get();
 
-      clientBookings.add({
+      //Accesses & adds translator info into client's booking doc, stored in booking collection
+      DocumentReference clientBookingRef = await clientBookings.add({
         'translator id': widget.translatorId,
         'date': DateFormat('EEE, M/d/y').format(currentDate),
         'description': _descriptionController.text,
@@ -69,33 +74,35 @@ class _BookingFormState extends State<BookingForm> {
         'last name': translatorDoc['last name']
       });
 
+      bookingId = clientBookingRef.id;
       clientBookingSaved = true;
-      print('Booking successfully saved');
+      print('Booking successfully saved with booking ID: $bookingId');
 
     } catch(e){
       print('Unable to store client booking');
     }
 
     try{
-
-    
+      //Accesses translator's services collection
       CollectionReference translatorServices = FirebaseFirestore.instance
       .collection('users')
       .doc(widget.translatorId)
       .collection('services');
 
+      //Specificially accesses client's user doc
       DocumentSnapshot<Map<String, dynamic>> clientDoc = await FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
       .get();
 
-      
+      //Adds client's info into translator's services doc, stored in services collection
       translatorServices.add({
         'client id': userId,
         'date': DateFormat('EEE, M/d/y').format(currentDate),
         'description': _descriptionController.text,
         'first name': clientDoc['first name'],
-        'last name': clientDoc['last name']
+        'last name': clientDoc['last name'],
+        'client booking id': bookingId
       });
 
       translatorServiceSaved = true;
@@ -115,7 +122,10 @@ class _BookingFormState extends State<BookingForm> {
             actions: <Widget>[
               TextButton(
                 onPressed: (){
-                  Navigator.of(context).pop();
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (context) => const ClientNavigation()) 
+                  );
                 }, 
                 child: Text('Ok'),
                 
@@ -152,16 +162,6 @@ class _BookingFormState extends State<BookingForm> {
         padding: const EdgeInsets.all(15.0),
         child: Column(
           children: [
-            /*
-            const Text(
-              'When would you like to book?',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w400
-              ),
-        
-            ),
-            */
             const Divider(color: Colors.black12,),
             TableCalendar(
               headerStyle: const HeaderStyle(

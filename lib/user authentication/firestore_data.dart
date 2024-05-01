@@ -2,58 +2,43 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class FirestoreData{
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  late User? _user;
-
-  FirestoreData(this._user);
-  getAccountType(String uid) {}
-  //final String _firstname = '';
-  //final String _lastName = '';
-
-
-
-
-  
-}
-
 
 Future<Map<String, dynamic>> getUserData(String userID) async {
   try {
-    // Query used to find user docs containing userID
+    // Snapshot of user's document containing account info
     DocumentSnapshot<Map<String, dynamic>> userDocs = await FirebaseFirestore.instance
         .collection('users')
         .doc(userID)
         .get();
 
-    // Check if any documents match the query
+    
     if (userDocs != null) {
       String firstName = userDocs['first name'];
       String lastName = userDocs['last name'];
       String email = userDocs['email'];
       String accountType = userDocs['account type'];
       String language = userDocs['language'];
-    
-
-      // Return user data as a map
+      
       return {
         'firstName': firstName,
         'lastName': lastName,
         'email': email,
         'accountType': accountType,
         'language': language
+       
       };
     } else {
-      // No document found with the specified user ID
+      // No document found 
       print('No user document found with ID: $userID');
     }
   } catch (e) {
     // Handle errors
     print('Error retrieving user data: $e');
   }
-  return {}; // Return an empty map if there's an error or no document found
+  return {}; //empty map if there's an error or no document found
 }
 
+/*
 Future<String?> getAccountType(String userID) async {
     try {
       // Query used to find user docs containing userID
@@ -79,5 +64,6 @@ Future<String?> getAccountType(String userID) async {
     }
     return null; // Return null if there's an error or no document found
   }
+  */
 
   

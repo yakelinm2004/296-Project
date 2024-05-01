@@ -3,7 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_app_296/user%20authentication/firestore_data.dart';
+
 
 class TranslatorServicesPage extends StatefulWidget {
   const TranslatorServicesPage({super.key});
@@ -17,7 +17,7 @@ class _TranslatorServicesPageState extends State<TranslatorServicesPage> {
   String? clientId;
    String? clientFirstName;
    String? clientLastName;
-  //late FirestoreData userData;
+
 
   List<DocumentSnapshot> _services = [];
   
@@ -49,12 +49,11 @@ class _TranslatorServicesPageState extends State<TranslatorServicesPage> {
 
           for (DocumentSnapshot service in _services) {
             setState(() {
-               final clientId = service['client id'];
+               clientId = service['client id'];
                _getClientInfo(clientId);
               
             });
-            //print(clientId);
-            //_getTranslatorInfo(translatorId);
+           
     }
         });
 
@@ -93,6 +92,85 @@ class _TranslatorServicesPageState extends State<TranslatorServicesPage> {
     }
     
     
+
+  }
+
+  void _declineService(DocumentSnapshot serviceSnapshot) async {
+
+    try{
+
+      final bookingId = serviceSnapshot['client booking id'];
+      final clientId = serviceSnapshot['client id'];
+
+      //Deleting booking doc from client booking collection
+       await FirebaseFirestore.instance
+      .collection('users')
+      .doc(clientId)
+      .collection('bookings')
+      .doc(bookingId)
+      .delete();
+      print('Successfully cancelled booking for client');
+
+      //Deleting services doc from translator's booking dollection
+       await FirebaseFirestore.instance
+      .collection('users')
+      .doc(_currentUser.uid)
+      .collection('services')
+      .where('client booking id', isEqualTo: bookingId)
+      .get()
+      .then((querySnapshot) {
+        querySnapshot.docs.forEach((doc) { 
+          doc.reference.delete();
+        });
+      });
+
+      setState(() {
+        _services.removeWhere((service) => service.id == serviceSnapshot.id);
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Booking cancelled successfully')),
+      );
+      print('Successfully removed service from translator');
+  
+
+    } catch(e){
+      print("Error cancelling booking: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to cancel booking. Please try again')),
+    );
+    }
+    
+
+
+  }
+
+  void _confirmDecline(DocumentSnapshot serviceSnapshot){
+    showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Decline Booking'),
+        content: Text('Are you sure you want to decline this booking?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+              _declineService(serviceSnapshot); // Proceed with cancellation
+            },
+            child: Text('Yes'),
+          ),
+        ],
+      );
+    },
+  );
+
 
   }
 
@@ -172,6 +250,21 @@ class _TranslatorServicesPageState extends State<TranslatorServicesPage> {
                               ),
                             ],
                           )
+                        ),
+
+                         ElevatedButton(
+                          style: TextButton.styleFrom(
+                          primary: const Color.fromARGB(255, 8, 86, 48),
+                          onSurface: Color.fromARGB(255, 0, 0, 0),
+                          ),
+                          onPressed: ()=> _confirmDecline(service),
+                          child: const Text(                        
+                            'Decline',
+                            style: TextStyle(
+                              color: Colors.red
+                            ),
+
+                          ),
                         )
                       ],
                     ),

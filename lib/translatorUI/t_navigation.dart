@@ -5,8 +5,8 @@ import 'package:mobile_app_296/translatorUI/t_home_screen.dart';
 import 'package:mobile_app_296/translatorUI/t_profile_page.dart';
 import 'package:mobile_app_296/translatorUI/t_services_page.dart';
 
-import '../clientUI/cl_profile_page.dart';
 
+//Main component for translator bottom navigation bar
 class TranslatorNavigation extends StatefulWidget {
   const TranslatorNavigation({super.key});
 
@@ -18,7 +18,6 @@ class _TranslatorNavigationState extends State<TranslatorNavigation> {
   int _selectedIndex = 0;
 
   final List<Widget> screens = [
-    //TranslatorHomePage(),
     TranslatorServicesPage(),
     TranslatorProfilePage()
 
@@ -39,12 +38,7 @@ class _TranslatorNavigationState extends State<TranslatorNavigation> {
         onDestinationSelected: _onItemTapped,
         selectedIndex: _selectedIndex,
         destinations: [
-          /*
-          NavigationDestination(
-            icon: Icon(Icons.home), 
-            label: 'Home'
-          ),
-          */
+         
           NavigationDestination(
             icon: Icon(Icons.people), 
             label: 'Services'

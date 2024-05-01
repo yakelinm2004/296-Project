@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app_296/models/usermodel.dart';
 
+import '../pages/app_home.dart';
+import '../pages/edit_profile.dart';
 import '../pages/login_page.dart';
 
 class TranslatorProfilePage extends StatefulWidget {
@@ -17,6 +19,7 @@ class _TranslatorProfilePageState extends State<TranslatorProfilePage> {
   String? myFirstName;
   String? myLastName;
   UserModel? user;
+  final User? _currentUser = FirebaseAuth.instance.currentUser;
 
 
   @override
@@ -47,6 +50,93 @@ class _TranslatorProfilePageState extends State<TranslatorProfilePage> {
   }).catchError((error){
     print('Error retrieving user info: $error');
   });
+}
+
+void _confirmAccountDeletion(){
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Delete Account'),
+        content: Text('Are you sure you want to permanently delete your account?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); 
+            },
+            child: Text('No'),
+          ),
+          TextButton(
+            onPressed: () { 
+              _deleteAccount(); 
+            },
+            child: const Text(
+              'Yes',
+              style: TextStyle(
+                color: Colors.red
+              ),
+              
+            ),
+          ),
+        ],
+      );
+    },
+  ).then((value) {
+    if(Navigator.canPop(context)){
+      Navigator.pop(context);
+    }
+  });
+}
+
+void _deleteAccount() async{
+
+  try{
+
+    DocumentSnapshot<Map<String, dynamic>>? userDoc = await FirebaseFirestore.instance
+   .collection('users')
+   .doc(_currentUser!.uid)
+   .get();
+
+    var credential = EmailAuthProvider.credential(
+      email: _currentUser.email!, 
+      password: userDoc!['password'] ?? ''
+    );
+
+    await _currentUser.reauthenticateWithCredential(credential);
+
+    _currentUser!.delete();
+    print('User account successfully deleted');
+
+    await FirebaseFirestore.instance
+      .collection('users')
+      .doc(_currentUser.uid)
+      .delete()
+      .then((doc) => print('User document successfully deleted'),
+      onError: (e) => print('Error deleting user document')
+  
+      );
+
+    await FirebaseFirestore.instance
+      .collection('users')
+      .doc(_currentUser.uid)
+      .collection('services')
+      .get()
+      .then((QuerySnapshot) {
+        QuerySnapshot.docs.forEach((doc) { 
+        doc.reference.delete();
+
+        });
+      });
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => AppHomePage())
+      );
+  } catch(e){
+    print('Error deleting account');
+  }
+  
+
 }
 
   
@@ -105,131 +195,161 @@ class _TranslatorProfilePageState extends State<TranslatorProfilePage> {
               color: Colors.black12,
             ),
             //user email
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Icon(Icons.person),
-                  SizedBox(width: 10.0),
-                  Text(
-                    'Edit Profile',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.0
-              
-              
-                    ),
-                  ),
-                ],
-              ),
-              
-            ),
-            const Divider(
-              color: Colors.black12,
-            ),
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Icon(Icons.language),
-                  SizedBox(width: 10.0),
-                  Text(
-                    'Languages',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.0
-              
-              
-                    ),
-                  ),
-                ],
-              ),
-              
-            ),
-            const Divider(
-              color: Colors.black12,
-            ),
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Icon(Icons.payment),
-                  SizedBox(width: 10.0),
-                  Text(
-                    'Payment Information',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.0
-              
-              
-                    ),
-                  ),
-                ],
-              ),
-              
-            ),
+            ClipRRect(
+              borderRadius: BorderRadiusDirectional.circular(20),
+              child: Container(
+                height: 420,
+                width: 360,
+                color: Colors.white,
 
-            const Divider(
-              color: Colors.black12,
-            ),
-            
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GestureDetector(
-                onTap: (){
-                  print('sign out button tapped');
-                  FirebaseAuth.instance.signOut();
-                  print('User is signed out');
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginPage())
-                  );
-                },
-                child: const Row(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
                   children: [
-                    Icon(Icons.logout),
-                    SizedBox(width: 10.0),
-                    Text(
-                      'Sign Out',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15.0
-                
-                
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => EditProfile())
+                          );
+                        },
+
+
+                        child: const Row(
+                          children: [
+                            Icon(Icons.person),
+                            SizedBox(width: 10.0),
+                            Text(
+                              'Edit Profile',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15.0
+                        
+                        
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+                    ),
+
+                    const Divider(
+                      color: Colors.black12,
+                    ),
+
+
+                     const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.language),
+                          SizedBox(width: 10.0),
+                          Text(
+                            'Languages',
+                            style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15.0
+              
+              
+                            ),
+                          ),
+                        ],
+                      ),
+              
+                    ),
+                    const Divider(
+                      color: Colors.black12,
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.payment),
+                          SizedBox(width: 10.0),
+                          Text(
+                            'Payment Information',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15.0
+            
+                            ),
+                          ),
+                        ],
+                      ),
+              
+                    ),
+
+                    const Divider(
+                      color: Colors.black12,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: (){
+                          print('sign out button tapped');
+                          FirebaseAuth.instance.signOut();
+                          print('User is signed out');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => LoginPage())
+                          );
+                        },
+                        child: const Row(
+                          children: [
+                            Icon(Icons.logout),
+                            SizedBox(width: 10.0),
+                            Text(
+                              'Sign Out',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15.0
+                
+                
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+              
+                    ),
+                    const Divider(
+                      color: Colors.black12,
+                    ),
+
+                    Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: (){
+                          _confirmAccountDeletion();
+                        },
+                        child: const Row(
+                          children: [
+                            Icon(Icons.delete_forever, color: Colors.red),
+                            SizedBox(width: 10.0),
+                            Text(
+                              'Delete Account',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15.0
+                                      
+                                      
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+              
                     ),
                   ],
                 ),
+                
               ),
-              
-            ),
-            const Divider(
-              color: Colors.black12,
-            ),
-
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Icon(Icons.delete_forever),
-                  SizedBox(width: 10.0),
-                  Text(
-                    'Delete Account',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.0
-              
-              
-                    ),
-                  ),
-                ],
-              ),
-              
             ),
           ],
           

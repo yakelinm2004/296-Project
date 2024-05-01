@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/material.dart';
 
 class TranslatorHomePage extends StatefulWidget {
@@ -17,3 +18,5 @@ class _TranslatorHomePageState extends State<TranslatorHomePage> {
     );
   }
 }
+
+*/

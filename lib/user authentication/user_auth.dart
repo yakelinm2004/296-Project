@@ -45,10 +45,10 @@ class UserAuthentication{
     } on FirebaseAuthException catch(e){
       if(e.code == 'user-not-found'){
         print('No user found for that email.');
-        //wrongEmail();
+        
       } else if(e.code == 'wrong-password'){
         print("Incorrect password");
-       // wrongPassword();
+       
       } else{
         print("Error signing in user");
       }
@@ -75,12 +75,6 @@ class UserAuthentication{
 
   }
 
-  //Sign out method
-  Future<void> signOut() async{
-    await FirebaseAuth.instance.signOut();
-
-
-  }
 
   //Storing User Information Method
   Future<bool> storeUserInformation(String email, String password, String firstName, String lastName, String accountType, String language) async{
@@ -104,13 +98,15 @@ class UserAuthentication{
         print("Error: User is null");
         return false;
       }
-      //return credential.firestore;
+     
     } catch(e){
       print("Some error occurred");
       return false;
     }
-    //return null;
+    
   }
+
+
 
   Future<UserModel?> getUserInformation(String userId) async {
   try {
@@ -121,6 +117,7 @@ class UserAuthentication{
         firstName: snapshot.data()!['firstName'],
         lastName: snapshot.data()!['lastName'],
         email: snapshot.data()!['email'],
+        
       );
     } else {
       print("User data not found");
@@ -133,41 +130,5 @@ class UserAuthentication{
 }
 
   
-
-  
-
-  //UserModel getFireBaseUser(F){
-
- // }
-
-
-
-/*
-  void wrongEmail(){
-    showDialog(
-      context: context, 
-      builder: (context){
-        return const AlertDialog(
-          title: Text('Incorrect Email')
-        );
-      }
-
-    );
-
-  }
-
-  void wrongPassword(){
-    showDialog(
-      context: context, 
-      builder: (context){
-        return const AlertDialog(
-          title: Text('Incorrect Password')
-        );
-      }
-
-    );
-  }
-*/
-
 
 }

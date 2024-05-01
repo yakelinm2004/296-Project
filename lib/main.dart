@@ -3,10 +3,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile_app_296/clientUI/cl_navigation.dart';
 import 'package:mobile_app_296/pages/login_page.dart';
-import 'package:mobile_app_296/clientUI/cl_profile_page.dart';
+
 import 'package:mobile_app_296/translatorUI/t_navigation.dart';
 
-import 'pages/app_home.dart';
 import 'user authentication/firestore_data.dart';
 
 void main() async {
@@ -38,15 +37,13 @@ class AuthenticationWrapper extends StatelessWidget {
             // If no user is signed in, navigate to the login page
             return LoginPage();
           } else {
-            // If user is signed in, determine their account type and navigate accordingly
+            // If user is signed in, determine their account type and navigate to appropriate UI components
             return FutureBuilder(
               future: getUserData(user.uid),
               builder: (context, AsyncSnapshot<Map<String, dynamic>> userDataSnapshot) {
                 if (userDataSnapshot.connectionState == ConnectionState.waiting) {
-                  // Still waiting for user data, show a loading spinner
                   return CircularProgressIndicator();
                 } else {
-                  // User data retrieved, check account type
                   Map<String, dynamic>? userData = userDataSnapshot.data;
                   if (userData != null && userData.containsKey('accountType')) {
                     String accountType = userData['accountType'];
@@ -56,21 +53,17 @@ class AuthenticationWrapper extends StatelessWidget {
                       return TranslatorNavigation();
                     } else {
                       print('Unknown account type: $accountType');
-                      // Handle unknown account type here
                       return Container();
                     }
                   } else {
-                    // User data not available or missing account type, handle it here
                     print('User data not available or missing account type');
-                    return Container();
+                    return LoginPage();
                   }
                 }
               },
             );
           }
         }
-
-        // By default, show a loading spinner
         return CircularProgressIndicator();
       },
     );

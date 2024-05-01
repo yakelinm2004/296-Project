@@ -6,6 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_app_296/models/usermodel.dart';
+import 'package:mobile_app_296/pages/app_home.dart';
+import 'package:mobile_app_296/pages/create_account.dart';
 import 'package:mobile_app_296/pages/edit_profile.dart';
 import 'package:mobile_app_296/pages/login_page.dart';
 import 'package:mobile_app_296/user%20authentication/firestore_data.dart';
@@ -20,7 +22,7 @@ class CLientProfilePage extends StatefulWidget {
 
 class _CLientProfilePageState extends State<CLientProfilePage> {
   //UserAuthentication _auth = ;
- //User? currentUser = _auth.currentUser;
+ final User? _currentUser = FirebaseAuth.instance.currentUser;
  //UserModel? user = await getUserInformation(currentUser?.uid);
   
   String? myEmail;
@@ -34,23 +36,95 @@ class _CLientProfilePageState extends State<CLientProfilePage> {
     super.initState();
     _getUserInformation();
   }
-/*
-  void fetchUserData() async {
-    try {
-      User? currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser != null) {
-        UserModel? userData = await getUserInformation(currentUser.uid);
-        if (userData != null) {
-          setState(() {
-            user = userData;
-          });
-        }
-      }
-    } catch (e) {
-      print('Error fetching user data: $e');
+
+  void _confirmAccountDeletion(){
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Delete Account'),
+        content: Text('Are you sure you want to permanently delete your account?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); 
+            },
+            child: Text('No'),
+          ),
+          TextButton(
+            onPressed: () { 
+              _deleteAccount(); 
+            },
+            child: Text(
+              'Yes',
+              style: TextStyle(
+                color: Colors.red
+              ),
+              
+            ),
+          ),
+        ],
+      );
+    },
+  ).then((value) {
+    if(Navigator.canPop(context)){
+      Navigator.pop(context);
     }
+  });
+}
+
+void _deleteAccount() async{
+
+  try{
+
+    DocumentSnapshot<Map<String, dynamic>>? userDoc = await FirebaseFirestore.instance
+   .collection('users')
+   .doc(_currentUser!.uid)
+   .get();
+
+    var credential = EmailAuthProvider.credential(
+      email: _currentUser.email!, 
+      password: userDoc!['password'] ?? ''
+    );
+
+    await _currentUser.reauthenticateWithCredential(credential);
+
+    _currentUser!.delete();
+    print('User account successfully deleted');
+
+    await FirebaseFirestore.instance
+      .collection('users')
+      .doc(_currentUser.uid)
+      .delete()
+      .then((doc) => print('User document successfully deleted'),
+      onError: (e) => print('Error deleting user document')
+  
+      );
+
+    await FirebaseFirestore.instance
+      .collection('users')
+      .doc(_currentUser.uid)
+      .collection('bookings')
+      .get()
+      .then((QuerySnapshot) {
+        QuerySnapshot.docs.forEach((doc) { 
+        doc.reference.delete();
+
+        });
+      });
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => AppHomePage())
+      );
+  } catch(e){
+    print('Error deleting account $e');
   }
-*/
+  
+
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +158,7 @@ class _CLientProfilePageState extends State<CLientProfilePage> {
             Column(
               children: [
                 Text(
-                  '$myFirstName $myLastName', //user name
+                  '$myFirstName $myLastName', 
                   style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
@@ -104,7 +178,6 @@ class _CLientProfilePageState extends State<CLientProfilePage> {
               ],
             ),
             SizedBox(height: 10),
-            //user email
 
             ClipRRect(
               borderRadius: BorderRadiusDirectional.circular(20),
@@ -126,7 +199,6 @@ class _CLientProfilePageState extends State<CLientProfilePage> {
                           );
                         },
 
-
                         child: Row(
                           children: [
                             Icon(Icons.person),
@@ -137,7 +209,6 @@ class _CLientProfilePageState extends State<CLientProfilePage> {
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 15.0
-                        
                         
                               ),
                             ),
@@ -163,17 +234,17 @@ class _CLientProfilePageState extends State<CLientProfilePage> {
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
                             fontSize: 15.0
-              
-              
+            
                             ),
                           ),
                         ],
                       ),
-              
                     ),
+
                     Divider(
                       color: Colors.black12,
                     ),
+
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
@@ -191,12 +262,12 @@ class _CLientProfilePageState extends State<CLientProfilePage> {
                           ),
                         ],
                       ),
-              
                     ),
 
                     Divider(
                       color: Colors.black12,
                     ),
+
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
@@ -211,12 +282,12 @@ class _CLientProfilePageState extends State<CLientProfilePage> {
                         },
                         child: Row(
                           children: [
-                            Icon(Icons.logout),
+                            Icon(Icons.logout,),
                             SizedBox(width: 10.0),
                             Text(
                               'Sign Out',
                               style: TextStyle(
-                                color: Colors.black,
+                                color: Colors.blue,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 15.0
                 
@@ -234,30 +305,32 @@ class _CLientProfilePageState extends State<CLientProfilePage> {
 
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete_forever),
-                          SizedBox(width: 10.0),
-                          Text(
-                            'Delete Account',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15.0
-              
-              
+                      child: GestureDetector(
+                        onTap: (){
+                          _confirmAccountDeletion();
+
+                        },
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete_forever, color: Colors.red),
+                            SizedBox(width: 10.0),
+                            Text(
+                              'Delete Account',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15.0
+                                      
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-              
                     ),
                   ],
                 ),
-                
               ),
             ),
-            
            
           ],
           
@@ -271,6 +344,8 @@ class _CLientProfilePageState extends State<CLientProfilePage> {
   
   
 Future _getUserInformation() async{
+
+  //Instance of user doc info
   await FirebaseFirestore.instance.collection('users')
   .doc(FirebaseAuth.instance.currentUser!.uid)
   .get()
@@ -294,29 +369,7 @@ Future _getUserInformation() async{
   });
 
 
-/*
-  final firebaseUser = FirebaseAuth.instance.currentUser;
-  if(firebaseUser != null){
-    await FirebaseFirestore.instance
-    .collection('users')
-    .doc(firebaseUser.uid)
-    .get()
-    .then((ds){
-      myEmail = ds.data()?['email'];
-      print(myEmail);
-
-    }).catchError((e){
-      print('error fetching user data: $e');
-    });
-  }
-*/
-
 }
 
-
-
-}
-
-void userData(){
 
 }

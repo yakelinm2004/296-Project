@@ -5,6 +5,7 @@ import 'package:mobile_app_296/clientUI/cl_bookings_page.dart';
 import 'package:mobile_app_296/clientUI/cl_home_screen.dart';
 import 'package:mobile_app_296/clientUI/cl_profile_page.dart';
 
+//Main component for bottom navigation bar for Client
 class ClientNavigation extends StatefulWidget {
   const ClientNavigation({super.key});
 
