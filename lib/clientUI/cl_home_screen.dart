@@ -15,14 +15,12 @@ class _ClientHomePageState extends State<ClientHomePage> {
   
   List _allResults = [];
   List _searchResults = [];
-  bool _isSearching = false;
+  //bool _isSearching = false;
   final searchController = TextEditingController();
 
   @override
   void initState() {
     
-    //getUserStream();
-    //searchController.addListener(_onSearchChanged);
     super.initState();
     _getAllUsers();
   }
@@ -41,8 +39,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
   }
   
   _onSearchChanged(String query){
-    //String query = searchController.text.toLowerCase();
-   //print('Search query: $query');
+  
     setState(() {
       _searchResults = _allResults.where((doc) {
       if (doc.data().containsKey('language')) {
@@ -130,6 +127,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                   ),
                   
                   //if(_isSearching)
+                  //Displays list of available translators
                     ListView.separated(
                       shrinkWrap: true,
                       itemCount: _searchResults.length,
@@ -172,6 +170,8 @@ class _ClientHomePageState extends State<ClientHomePage> {
                                 ),
                               ),
                               SizedBox(width: 30),
+
+                              //Booking button
                               ElevatedButton(
                                 style: TextButton.styleFrom(
                                   primary: const Color.fromARGB(255, 8, 86, 48),

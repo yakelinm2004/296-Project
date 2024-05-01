@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
-import 'package:mobile_app_296/translatorUI/t_home_screen.dart';
 import 'package:mobile_app_296/translatorUI/t_profile_page.dart';
 import 'package:mobile_app_296/translatorUI/t_services_page.dart';
 
